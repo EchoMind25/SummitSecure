@@ -1,24 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Shield, Lock, Users, FileText, ArrowRight, CheckCircle, X, Play } from 'lucide-react'
+import { Shield, Lock, Users, FileText, ArrowRight, X, Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { useAuth } from '@/components/providers'
 
 export default function LandingPage() {
   const { user, loading } = useAuth()
-  const router = useRouter()
   const [showDemo, setShowDemo] = useState(false)
 
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/dashboard')
-    }
-  }, [user, loading, router])
+  // Don't auto-redirect authenticated users - let them choose what to do
 
   if (loading) {
     return (
@@ -39,12 +33,20 @@ export default function LandingPage() {
               <span className="text-xl font-bold">Summit Secure</span>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/login">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link href="/login">
-                <Button>Get Started</Button>
-              </Link>
+              {user ? (
+                <Link href="/dashboard">
+                  <Button>Go to Dashboard</Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost">Sign In</Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button>Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -75,12 +77,21 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <Link href="/login">
-                <Button size="lg" className="text-lg px-8 py-3">
-                  Start Free Trial
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+              {user ? (
+                <Link href="/dashboard">
+                  <Button size="lg" className="text-lg px-8 py-3">
+                    Go to Dashboard
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/login">
+                  <Button size="lg" className="text-lg px-8 py-3">
+                    Start Free Trial
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              )}
               <Button
                 variant="outline"
                 size="lg"

@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Shield, Mail, Chrome, ArrowLeft } from 'lucide-react'
@@ -18,13 +17,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
   const { user } = useAuth()
-  const router = useRouter()
 
-  useEffect(() => {
-    if (user) {
-      router.push('/dashboard')
-    }
-  }, [user, router])
+  // Don't redirect authenticated users - let them see they're already logged in
 
   // Check if Supabase is available
   if (!isSupabaseAvailable()) {
@@ -35,6 +29,24 @@ export default function LoginPage() {
           <p className="text-muted-foreground">
             Authentication service is not properly configured.
           </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show message for already authenticated users
+  if (user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center">
+          <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
+          <h1 className="text-3xl font-bold mb-4">Already Signed In</h1>
+          <p className="text-muted-foreground mb-8">
+            You are already signed in as {user.email}. Click below to go to your dashboard.
+          </p>
+          <Link href="/dashboard">
+            <Button size="lg">Go to Dashboard</Button>
+          </Link>
         </div>
       </div>
     )

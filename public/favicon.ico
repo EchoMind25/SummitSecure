@@ -1,0 +1,10 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield background -->
+  <path d="M20 2L32 8V18C32 28 26 34 20 36C14 34 8 28 8 18V8L20 2Z" fill="#2563EB" stroke="#1e40af" stroke-width="2"/>
+  <!-- Lock -->
+  <rect x="14" y="16" width="12" height="8" rx="2" fill="white"/>
+  <rect x="16" y="14" width="8" height="4" rx="1" fill="white"/>
+  <circle cx="20" cy="21" r="2" fill="#2563EB"/>
+  <!-- Checkmark -->
+  <path d="M17 23L19 25L23 21" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

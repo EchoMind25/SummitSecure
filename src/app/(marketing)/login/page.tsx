@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { supabase, isSupabaseAvailable } from '@/lib/supabase'
+import { supabase, isSupabaseAvailable, getSiteUrl } from '@/lib/supabase'
 import { useAuth } from '@/components/providers'
 import { toast } from '@/components/ui/use-toast'
 
@@ -19,6 +19,12 @@ export default function LoginPage() {
   const [emailSent, setEmailSent] = useState(false)
   const { user } = useAuth()
   const router = useRouter()
+
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard')
+    }
+  }, [user, router])
 
   // Check if Supabase is available
   if (!isSupabaseAvailable()) {
@@ -34,12 +40,6 @@ export default function LoginPage() {
     )
   }
 
-  useEffect(() => {
-    if (user) {
-      router.push('/dashboard')
-    }
-  }, [user, router])
-
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -48,7 +48,7 @@ export default function LoginPage() {
       const { error } = await supabase!.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `https://summitsecure.netlify.app/auth/callback`,
+          emailRedirectTo: `${getSiteUrl()}/auth/callback`,
         },
       })
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
       const { error } = await supabase!.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `https://summitsecure.netlify.app/auth/callback`,
+          redirectTo: `${getSiteUrl()}/auth/callback`,
         },
       })
 
@@ -120,7 +120,7 @@ export default function LoginPage() {
               </div>
               <CardTitle>Check your email</CardTitle>
               <CardDescription>
-                We've sent a magic link to <strong>{email}</strong>
+                We&apos;ve sent a magic link to <strong>{email}</strong>
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">

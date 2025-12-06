@@ -13,7 +13,11 @@ export const metadata: Metadata = {
   description: "Client files that never hit your inbox. Ever. Secure file sharing for accountants, attorneys, and consultants.",
   keywords: ["file sharing", "secure portal", "client files", "accounting", "legal"],
   authors: [{ name: "Summit Secure" }],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({

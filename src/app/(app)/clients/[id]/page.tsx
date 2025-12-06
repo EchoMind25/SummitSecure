@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Lock, Unlock, Download, Eye, FileText, Image, File, Keyboard, X, History } from 'lucide-react'
+import { Lock, Unlock, Download, Eye, FileText, Image, File, History } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -47,9 +47,23 @@ export default function ClientDetailPage() {
   const [unlockCode, setUnlockCode] = useState('')
   const [unlocking, setUnlocking] = useState(false)
   const [auditLogOpen, setAuditLogOpen] = useState(false)
+  const [configError, setConfigError] = useState(false)
 
-  // Check if Supabase is available
-  if (!isSupabaseAvailable()) {
+  // Check if Supabase is available and fetch data
+  useEffect(() => {
+    if (!isSupabaseAvailable()) {
+      setConfigError(true)
+      setLoading(false)
+      return
+    }
+
+    if (id && user) {
+      fetchClientData()
+    }
+  }, [id, user])
+
+  // Show config error if Supabase is not available
+  if (configError) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-2">Configuration Error</h2>
@@ -59,12 +73,6 @@ export default function ClientDetailPage() {
       </div>
     )
   }
-
-  useEffect(() => {
-    if (id) {
-      fetchClientData()
-    }
-  }, [id, user])
 
   const fetchClientData = async () => {
     if (!user || !id || !supabase) return

@@ -2,6 +2,10 @@
 
 Client files that never hit your inbox. Ever.
 
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/yourusername/summitsecure)
+
+> **🚨 SECURITY UPDATE:** Fully patched against CVE-2025-55182 and CVE-2025-66478 (Next.js RCE vulnerabilities)
+
 A production-grade, visually stunning client file drop portal for accountants, attorneys, and consultants. Built with Next.js 15, Supabase, and Tailwind CSS.
 
 ## ✨ Features
@@ -234,5 +238,46 @@ MIT License - see LICENSE file for details.
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
 
 ---
+
+## 🔒 Security Checklist (Post-Upgrade)
+
+After upgrading, run these commands to ensure security:
+
+```bash
+# Audit dependencies for vulnerabilities
+npm audit
+
+# Fix any audit issues
+npm audit fix
+
+# Run security linting
+npm run lint
+
+# Test all endpoints for RSC compatibility
+curl -I https://summitsecure.netlify.app/api/auth/callback
+curl -I https://summitsecure.netlify.app/dashboard
+curl -I https://summitsecure.netlify.app/drop/test-share-id
+```
+
+### ✅ Security Features Implemented
+
+- **Next.js 16.0.7** with React Compiler enabled
+- **React 19.2.1** with hardened RSC implementation
+- **Enhanced CSP headers** with strict origin policies
+- **X-Frame-Options: DENY** to prevent clickjacking
+- **Row Level Security** on all Supabase tables
+- **End-to-end encryption** for file storage
+- **Secure auth callbacks** with proper validation
+- **Environment variable validation** for production safety
+
+### 🛡️ Production Security Headers
+
+```http
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' *.supabase.co; frame-ancestors 'none';
+Referrer-Policy: strict-origin-when-cross-origin
+```
 
 Built with ❤️ for accountants, attorneys, and consultants who deserve better file sharing.

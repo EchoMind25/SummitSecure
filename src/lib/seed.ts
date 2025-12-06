@@ -87,13 +87,14 @@ export async function seedDatabase() {
       clients.push(client)
     }
 
-    // Create fake files for each client
+    // Create fake files for each client (ensure some locked files for demo)
     for (const client of clients) {
-      const fileCount = faker.number.int({ min: 0, max: 5 })
+      const fileCount = faker.number.int({ min: 3, max: 7 }) // Ensure some files
       for (let i = 0; i < fileCount; i++) {
         const fileTypes = ['pdf', 'docx', 'xlsx', 'jpg', 'png']
         const fileType = faker.helpers.arrayElement(fileTypes)
         const originalName = `${faker.lorem.words(2).replace(' ', '_')}.${fileType}`
+        const isLocked = i < 2 // First 2 files are locked for demo purposes
 
         await supabase!
           .from('files')
@@ -103,11 +104,14 @@ export async function seedDatabase() {
             filename: `${faker.string.uuid()}.${fileType}`,
             original_name: originalName,
             file_size: faker.number.int({ min: 1024, max: 10485760 }), // 1KB to 10MB
-            mime_type: `application/${fileType}`,
+            mime_type: fileType === 'pdf' ? 'application/pdf' :
+                      fileType === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' :
+                      fileType === 'xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
+                      `image/${fileType}`,
             storage_path: `files/${client.id}/${faker.string.uuid()}.${fileType}`,
             uploaded_by: user.id,
-            is_locked: faker.datatype.boolean(),
-            unlocked_at: faker.datatype.boolean() ? faker.date.recent() : null
+            is_locked: isLocked,
+            unlocked_at: isLocked ? null : faker.date.recent()
           })
       }
     }

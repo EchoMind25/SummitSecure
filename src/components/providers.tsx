@@ -27,28 +27,36 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!isSupabaseAvailable()) {
-      setLoading(false)
-      return
+    const initializeAuth = async () => {
+      if (!isSupabaseAvailable()) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        // Get initial session
+        const { data: { session } } = await supabase!.auth.getSession()
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
+
+        // Listen for auth changes
+        const {
+          data: { subscription },
+        } = supabase!.auth.onAuthStateChange((_event, session) => {
+          setSession(session)
+          setUser(session?.user ?? null)
+          setLoading(false)
+        })
+
+        return () => subscription.unsubscribe()
+      } catch (error) {
+        console.error('Auth initialization error:', error)
+        setLoading(false)
+      }
     }
 
-    // Get initial session
-    supabase!.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase!.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
+    initializeAuth()
   }, [])
 
   return (

@@ -28,9 +28,23 @@ export default function BrandingSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [configError, setConfigError] = useState(false)
 
-  // Check if Supabase is available
-  if (!isSupabaseAvailable()) {
+  // Check if Supabase is available and fetch data
+  useEffect(() => {
+    if (!isSupabaseAvailable()) {
+      setConfigError(true)
+      setLoading(false)
+      return
+    }
+
+    if (user) {
+      fetchSettings()
+    }
+  }, [user])
+
+  // Show config error if Supabase is not available
+  if (configError) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-2">Configuration Error</h2>
@@ -40,10 +54,6 @@ export default function BrandingSettingsPage() {
       </div>
     )
   }
-
-  useEffect(() => {
-    fetchSettings()
-  }, [user])
 
   const fetchSettings = async () => {
     if (!user || !supabase) return

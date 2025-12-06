@@ -48,24 +48,7 @@ export default function DropPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [authenticated, setAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
-
-  // Check if Supabase is available
-  if (!isSupabaseAvailable()) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Configuration Error</h2>
-          <p className="text-muted-foreground">
-            The file upload service is not properly configured.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  useEffect(() => {
-    fetchClientData()
-  }, [shareId])
+  const [configError, setConfigError] = useState(false)
 
   const fetchClientData = async () => {
     if (!shareId || !supabase) return
@@ -138,6 +121,33 @@ export default function DropPage() {
     const droppedFiles = Array.from(e.dataTransfer.files)
     addFiles(droppedFiles)
   }, [])
+
+  // Check if Supabase is available and fetch data
+  useEffect(() => {
+    if (!isSupabaseAvailable()) {
+      setConfigError(true)
+      setLoading(false)
+      return
+    }
+
+    if (shareId) {
+      fetchClientData()
+    }
+  }, [shareId])
+
+  // Show config error if Supabase is not available
+  if (configError) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Configuration Error</h2>
+          <p className="text-muted-foreground">
+            The file upload service is not properly configured.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || [])
@@ -344,32 +354,48 @@ export default function DropPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
+            className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
           >
-            <CheckCircle className="h-8 w-8 text-green-600" />
+            <CheckCircle className="h-10 w-10 text-green-600" />
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-2xl font-bold mb-2"
+            className="text-3xl font-bold mb-3"
           >
-            Upload Complete!
+            Files Delivered Securely! 🔒
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="text-muted-foreground mb-6"
+            className="text-muted-foreground mb-6 text-lg"
           >
-            Your files have been securely uploaded and will be reviewed by {client.name}.
+            Your documents have been encrypted and safely stored.
+            {client.name} will review them shortly.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
+            className="space-y-3"
           >
-            <Button onClick={() => window.location.reload()}>
+            <div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-1">
+                <Shield className="h-4 w-4" />
+                <span>End-to-end encrypted</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Lock className="h-4 w-4" />
+                <span>Secure storage</span>
+              </div>
+            </div>
+            <Button
+              onClick={() => window.location.reload()}
+              size="lg"
+              className="w-full"
+            >
               Upload More Files
             </Button>
           </motion.div>

@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 // Create Supabase client only if environment variables are available
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 export const supabase = supabaseUrl && supabaseKey
   ? createClient(supabaseUrl, supabaseKey, {
@@ -17,6 +18,14 @@ export const supabase = supabaseUrl && supabaseKey
 // Helper function to check if Supabase is available
 export function isSupabaseAvailable(): boolean {
   return supabase !== null
+}
+
+// Get the current site URL (client-side or server-side)
+export function getSiteUrl(): string {
+  if (typeof window !== 'undefined') {
+    return window.location.origin
+  }
+  return siteUrl
 }
 
 // Database types (generated from our schema)
@@ -197,7 +206,7 @@ export type Database = {
           resource_id: string
           ip_address: string | null
           user_agent: string | null
-          metadata: Record<string, any>
+          metadata: Record<string, unknown>
           created_at: string
         }
         Insert: {

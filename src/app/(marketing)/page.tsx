@@ -1,16 +1,18 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Shield, Lock, Users, FileText, ArrowRight, CheckCircle } from 'lucide-react'
+import { Shield, Lock, Users, FileText, ArrowRight, CheckCircle, X, Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { useAuth } from '@/components/providers'
 
 export default function LandingPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [showDemo, setShowDemo] = useState(false)
 
   useEffect(() => {
     if (!loading && user) {
@@ -79,8 +81,14 @@ export default function LandingPage() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-3">
-                Watch Demo
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 py-3"
+                onClick={() => setShowDemo(true)}
+              >
+                <Play className="h-4 w-4 mr-2" />
+                See 2-Minute Demo
               </Button>
             </motion.div>
           </div>
@@ -88,7 +96,10 @@ export default function LandingPage() {
 
         {/* Background Pattern */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-border [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]">
+          <svg
+            className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-border [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
+            aria-hidden="true"
+          >
             <defs>
               <pattern
                 id="e813992c-7d03-4cc4-a2bd-151760b470a0"
@@ -107,7 +118,7 @@ export default function LandingPage() {
               strokeWidth={0}
               fill="url(#e813992c-7d03-4cc4-a2bd-151760b470a0)"
             />
-          </div>
+          </svg>
         </div>
       </section>
 
@@ -235,6 +246,35 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Demo Modal */}
+      <Dialog open={showDemo} onOpenChange={setShowDemo}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <div className="relative w-full h-full">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-2 right-2 z-10"
+              onClick={() => setShowDemo(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
+              <div className="text-center">
+                <Play className="h-16 w-16 text-primary mx-auto mb-4" />
+                <h3 className="text-2xl font-bold mb-2">Demo Video</h3>
+                <p className="text-muted-foreground mb-4">
+                  Watch how Summit Secure transforms client file sharing
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  [Demo video would be embedded here - showing drag-and-drop uploads,
+                  file unlocking, and the complete workflow]
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

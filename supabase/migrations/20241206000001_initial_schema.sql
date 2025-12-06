@@ -215,3 +215,4 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Enable realtime for key tables
 ALTER PUBLICATION supabase_realtime ADD TABLE files;
 ALTER PUBLICATION supabase_realtime ADD TABLE audit_log;
+

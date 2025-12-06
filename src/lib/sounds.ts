@@ -2,7 +2,7 @@
 const createTone = (frequency: number, duration: number, type: OscillatorType = 'sine') => {
   return new Promise<void>((resolve) => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
       const oscillator = audioContext.createOscillator()
       const gainNode = audioContext.createGain()
 
@@ -56,6 +56,16 @@ export const playUnlockSound = async () => {
     setTimeout(() => createTone(800, 0.15), 100)
   } catch (error) {
     console.warn('Sound playback failed:', error)
+  }
+}
+
+// Button hover sound
+export const playHoverSound = async () => {
+  try {
+    // Soft click sound for button hovers
+    await createTone(800, 0.05, 'sine')
+  } catch (error) {
+    // Silently fail if audio isn't supported
   }
 }
 

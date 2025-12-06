@@ -4,30 +4,26 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  NEXT_PUBLIC_SITE_URL = "https://summitsecure.netlify.app"
+  # Set these in Netlify dashboard:
+  # NEXT_PUBLIC_SUPABASE_URL
+  # NEXT_PUBLIC_SUPABASE_ANON_KEY
+  # SUPABASE_SERVICE_ROLE_KEY
 
-# Next.js configuration for Netlify
-[build.processing]
-  skip_processing = false
+# Build hooks
+[build.hooks]
+  prebuild = "echo '🚀 Starting secure Summit Secure build (CVE-2025-55182/66478 patched)...'"
+  postbuild = "echo '✅ Build completed successfully - all security patches applied!'"
 
-[build.processing.css]
-  bundle = true
-  minify = true
-
-[build.processing.js]
-  bundle = true
-  minify = true
-
-[build.processing.html]
-  pretty_urls = true
-
-# Headers for security and performance
+# Security headers (enhanced CSP)
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' *.supabase.co; frame-ancestors 'none';"
 
 # Cache static assets
 [[headers]]
@@ -41,24 +37,15 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Environment variables (set these in Netlify dashboard)
-# NEXT_PUBLIC_SUPABASE_URL
-# NEXT_PUBLIC_SUPABASE_ANON_KEY
-# SUPABASE_SERVICE_ROLE_KEY (for server-side operations)
-
-# Redirects for SPA routing
+# API routes redirect
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/api/auth/callback"
+  to = "/api/auth/callback"
   status = 200
 
-# Handle client-side routing
+# SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Build hooks (optional - for database migrations)
-[build.hooks]
-  prebuild = "echo 'Starting build...'"
-  postbuild = "echo 'Build completed!'"

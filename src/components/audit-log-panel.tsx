@@ -40,19 +40,16 @@ export function AuditLogPanel({ isOpen, onClose, clientId }: AuditLogPanelProps)
   const [entries, setEntries] = useState<AuditLogEntry[]>([])
   const [loading, setLoading] = useState(false)
 
-  // Check if Supabase is available
-  if (!isSupabaseAvailable()) {
-    return null
-  }
-
   useEffect(() => {
+    if (!isSupabaseAvailable()) return
+
     if (isOpen) {
       fetchAuditLog()
     }
   }, [isOpen, clientId])
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isSupabaseAvailable() || !isOpen) return
 
     // Set up realtime subscription for new audit entries
     const channel = supabase!
@@ -67,7 +64,7 @@ export function AuditLogPanel({ isOpen, onClose, clientId }: AuditLogPanelProps)
         },
         (payload) => {
           // Add new entry to the list
-          const newEntry = payload.new as AuditLogEntry
+          const newEntry = payload.new as unknown as AuditLogEntry
           setEntries(prev => [newEntry, ...prev])
         }
       )
@@ -77,6 +74,11 @@ export function AuditLogPanel({ isOpen, onClose, clientId }: AuditLogPanelProps)
       supabase!.removeChannel(channel)
     }
   }, [isOpen, clientId])
+
+  // Return null if Supabase is not available
+  if (!isSupabaseAvailable()) {
+    return null
+  }
 
   const fetchAuditLog = async () => {
     if (!user || !supabase) return

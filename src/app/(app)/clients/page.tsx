@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Search, Plus, MoreHorizontal, Copy, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { supabase, isSupabaseAvailable } from '@/lib/supabase'
@@ -30,9 +30,23 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
+  const [configError, setConfigError] = useState(false)
 
-  // Check if Supabase is available
-  if (!isSupabaseAvailable()) {
+  // Check if Supabase is available and fetch data
+  useEffect(() => {
+    if (!isSupabaseAvailable()) {
+      setConfigError(true)
+      setLoading(false)
+      return
+    }
+
+    if (user) {
+      fetchClients()
+    }
+  }, [user])
+
+  // Show config error if Supabase is not available
+  if (configError) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-2">Configuration Error</h2>
@@ -43,10 +57,6 @@ export default function ClientsPage() {
     )
   }
 
-  useEffect(() => {
-    fetchClients()
-  }, [user])
-
   const fetchClients = async () => {
     if (!user || !supabase) return
 
@@ -56,7 +66,10 @@ export default function ClientsPage() {
         .select('*')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
       setClients(data || [])
     } catch (error) {
       console.error('Error fetching clients:', error)
@@ -84,6 +97,7 @@ export default function ClientsPage() {
         description: "Share link has been copied to clipboard.",
       })
     } catch (error) {
+      console.error('Copy error:', error)
       toast({
         title: "Error",
         description: "Failed to copy link to clipboard.",

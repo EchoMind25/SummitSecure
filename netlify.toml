@@ -37,15 +37,13 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# API routes redirect
+# Next.js static assets - preserve paths for proper loading
 [[redirects]]
-  from = "/api/auth/callback"
-  to = "/api/auth/callback"
+  from = "/_next/*"
+  to = "/_next/:splat"
   status = 200
 
-# SPA fallback
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# CRITICAL FIX: Removed the destructive catch-all redirect "/* /index.html 200"
+# This was breaking API routes and Next.js server-side functionality.
+# Next.js handles its own routing - no manual SPA fallback needed.
 

@@ -48,7 +48,7 @@ export default function LoginPage() {
       const { error } = await supabase!.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `https://summitsecure.netlify.app/auth/callback`,
         },
       })
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
       const { error } = await supabase!.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `https://summitsecure.netlify.app/auth/callback`,
         },
       })
 

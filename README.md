@@ -54,8 +54,8 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 In your Supabase dashboard:
 
 1. **Authentication → Settings**
-   - Site URL: `http://localhost:3000`
-   - Redirect URLs: `http://localhost:3000/auth/callback`
+   - Site URL: `https://summitsecure.netlify.app`
+   - Redirect URLs: `https://summitsecure.netlify.app/auth/callback`
 
 2. **Authentication → Providers → Google**
    - Enable Google provider
@@ -81,7 +81,7 @@ await seedDatabase()
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000)
+Visit [https://summitsecure.netlify.app](https://summitsecure.netlify.app)
 
 ## 📦 Project Structure
 
